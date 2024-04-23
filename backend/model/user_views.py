@@ -2,8 +2,8 @@ from urllib import request
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth import authenticate, update_session_auth_hash, login, logout
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
 from .models import User
@@ -161,6 +161,8 @@ def loginUser(request):
         if not check_password(password, user.password):
             return JsonResponse({'error': 'El nombre de usuario o la contraseña son incorrectos'}, status=401)
 
+        getCSRFToken(request)
+        
         login(request, user)
 
         # Devolver la respuesta con el mensaje de inicio de sesión exitoso y el token CSRF
@@ -171,10 +173,46 @@ def loginUser(request):
 
 def getCSRFToken(request):
     csrf_token = request.COOKIES.get('csrftoken')
-
     return JsonResponse({'token': csrf_token})
 
 @login_required
 def logoutUser(request):
     logout(request)
     return JsonResponse({'message': '¡Cierre de sesión exitoso!'})
+
+@login_required
+def changeUserData(request):
+    if request.method == 'POST':
+            # Obtener el nombre de usuario del cuerpo JSON de la solicitud
+            data = json.loads(request.body)
+            username = data.get('username')
+
+            # Verificar si se proporciona el nombre de usuario
+            if not username:
+                return JsonResponse({'error': 'Se requiere el nombre de usuario'}, status=400)
+
+            # Buscar el usuario en la base de datos
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'El usuario no existe'}, status=404)
+
+            # Obtener los nuevos datos del usuario
+            new_email = data.get('email')
+            new_password = data.get('password')
+
+            # Verificar y actualizar el correo electrónico si se proporciona
+            if new_email:
+                user.email = new_email
+            # Verificar y actualizar la contraseña si se proporciona
+            if new_password:
+                user.set_password(new_password)
+                user.save()
+
+            # Guardar los cambios en el usuario
+            user.save()
+
+            return JsonResponse({'message': '¡Datos de usuario actualizados correctamente!'})
+
+    # Si la solicitud no es de tipo POST, devolver un error
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=405)

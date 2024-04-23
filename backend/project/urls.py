@@ -29,5 +29,6 @@ urlpatterns = [
     path('user/restorePassword', user_views.restorePassword),
     path('user/login', user_views.loginUser),
     path('user/logout', user_views.logoutUser),
-    path('user/getToken', user_views.getCSRFToken)
+    path('user/getToken', user_views.getCSRFToken),
+    path('user/changeUserData', user_views.changeUserData)
 ]
