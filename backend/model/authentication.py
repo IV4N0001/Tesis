@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.hashers import check_password
 
-def sendToken(email, token):
+def send_token(email, token):
     # Construir el mensaje de correo electrónico
     subject = 'Token de recuperación de cuenta'
     message = f'Tu token de recuperación de cuenta es: {token}'
@@ -14,6 +14,6 @@ def sendToken(email, token):
     # Devolver el token de recuperación en caso de que lo necesites para otro propósito
     #return token
 
-def checkPassword(flatPassword, encodePassword):
+def check_password(flatPassword, encodePassword):
     return check_password(flatPassword, encodePassword)
 

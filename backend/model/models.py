@@ -3,12 +3,12 @@ from .managers import CustomUserManager
 from django.db import models
 
 class User(AbstractBaseUser):
-    idUser = models.AutoField(primary_key=True)
+    id_user = models.AutoField(primary_key=True)
     username = models.CharField(max_length=100, null=False, unique=True)
     password = models.CharField(max_length=100, null=False)
     email = models.EmailField(max_length=100, null=False, unique=True)
     token = models.CharField(max_length=100, null=True)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'password']
@@ -22,20 +22,20 @@ class User(AbstractBaseUser):
         db_table = 'user'
 
 class Class(models.Model):
-    idClass = models.AutoField(primary_key=True)
-    idUser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    className = models.CharField(max_length=100, null=False)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    id_class = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    class_name = models.CharField(max_length=100, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'class'
 
 class Subject(models.Model):
-    idSubject = models.AutoField(primary_key=True)
-    idUser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    idClass = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True)
-    subjectName = models.CharField(max_length=100, null=False)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    id_subject = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    clas = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True)
+    subject_name = models.CharField(max_length=100, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'subject'
@@ -71,39 +71,39 @@ class Student(models.Model):
         (3, 'En grupo'),
     )
 
-    StudyFrecuency = (
+    StudyFrequency = (
         (1, 'Diario'),
         (2, 'Una semana antes de un examen'),
         (3, 'Un día antes de un examen')
     )
 
-    idStudent = models.AutoField(primary_key=True)
-    idUser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    idClass = models.ManyToManyField(Class, blank=True)
-    idSubject = models.ManyToManyField(Subject, blank=True)
-    studentName = models.CharField(max_length=100, null=False)
-    gradeGroup = models.CharField(max_length=100, null=False)
-    fatherEducation = models.IntegerField(choices=ParentsEducation, null=False)
-    motherEducation = models.IntegerField(choices=ParentsEducation, null=False)
-    familyIncome = models.IntegerField(choices=FamilyIncome, null=False)
-    highSchoolGPA = models.IntegerField(choices=HSGPA, null=False)
-    defaultedSubjects = models.IntegerField(choices=DefaultedSubjects)
-    currentGPA = models.FloatField(null=False)
-    studyPreference = models.IntegerField(choices=AcademicPreferences, null=False)
-    preferenceAcademicActivities = models.IntegerField(choices=AcademicPreferences, null=False)
-    studyFrecuency = models.IntegerField(choices=StudyFrecuency, null=False)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    id_student = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    clas = models.ManyToManyField(Class, blank=True)
+    subject = models.ManyToManyField(Subject, blank=True)
+    student_name = models.CharField(max_length=100, null=False)
+    grade_group = models.CharField(max_length=100, null=False)
+    father_education = models.IntegerField(choices=ParentsEducation, null=False)
+    mother_education = models.IntegerField(choices=ParentsEducation, null=False)
+    family_income = models.IntegerField(choices=FamilyIncome, null=False)
+    high_school_GPA = models.IntegerField(choices=HSGPA, null=False)
+    defaulted_subjects = models.IntegerField(choices=DefaultedSubjects)
+    current_GPA = models.FloatField(null=False)
+    study_preference = models.IntegerField(choices=AcademicPreferences, null=False)
+    preference_academic_activities = models.IntegerField(choices=AcademicPreferences, null=False)
+    study_frequency = models.IntegerField(choices=StudyFrequency, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'student'
 
 class Tendency(models.Model):
-    idTendency = models.AutoField(primary_key=True)
-    idStudent = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
-    studentClass = models.IntegerField(null=False)
-    tendencyToFail = models.FloatField(null=False)
-    tendencyToApprove = models.FloatField(null=False)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    id_tendency = models.AutoField(primary_key=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
+    student_class = models.IntegerField(null=False)
+    tendency_to_fail = models.FloatField(null=False)
+    tendency_to_approve = models.FloatField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'tendency'
