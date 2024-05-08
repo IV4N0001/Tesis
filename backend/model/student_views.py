@@ -69,3 +69,71 @@ def student_registration(request):
 def get_students(request):
     students = list(Student.objects.values())
     return JsonResponse(students, safe=False)
+
+@csrf_exempt
+def add_student_to_class(request):
+    if request.method == 'PATCH':
+        data = json.loads(request.body)
+        username = data.get('username')
+        class_name = data.get('class_name')
+        student_name = data.get('student_name')
+
+        try:
+            # Buscar al usuario
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'El usuario no existe'}, status=400)
+
+        try:
+            # Buscar la clase del usuario
+            clas = Class.objects.get(class_name=class_name, user_id=user)
+        except Class.DoesNotExist:
+            return JsonResponse({'error': 'La clase no existe'}, status=400)
+
+        try:
+            # Buscar al estudiante
+            student = Student.objects.get(student_name=student_name)
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'El estudiante no existe'}, status=400)
+
+        student.clas.add(clas)
+
+        return JsonResponse({'message': 'Estudiante agregado a la clase exitosamente'})
+
+    return JsonResponse({'error': 'Se espera una solicitud PATCH'}, status=405)
+
+@csrf_exempt
+def remove_student_from_class(request):
+    if request.method == 'PATCH':
+        data = json.loads(request.body)
+        username = data.get('username')
+        class_name = data.get('class_name')
+        student_name = data.get('student_name')
+
+        try:
+            # Buscar al usuario
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'El usuario no existe'}, status=400)
+
+        try:
+            # Buscar la clase del usuario
+            clas = Class.objects.get(class_name=class_name, user=user)
+        except Class.DoesNotExist:
+            return JsonResponse({'error': 'La clase no existe'}, status=400)
+
+        try:
+            # Buscar al estudiante
+            student = Student.objects.get(student_name=student_name)
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'El estudiante no existe'}, status=400)
+
+        # Verificar si el estudiante está asociado a la clase
+        if clas.students.filter(id_student=student.id_student).exists():
+            # Remover al estudiante de la clase
+            student.clas.remove(clas)
+            return JsonResponse({'message': 'Estudiante eliminado de la clase exitosamente'})
+        else:
+            return JsonResponse({'error': 'El estudiante no está asociado a esta clase'}, status=400)
+
+    return JsonResponse({'error': 'Se espera una solicitud PATCH'}, status=405)

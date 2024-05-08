@@ -26,7 +26,7 @@ class Class(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     class_name = models.CharField(max_length=100, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         db_table = 'class'
 
@@ -79,7 +79,7 @@ class Student(models.Model):
 
     id_student = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    clas = models.ManyToManyField(Class, blank=True)
+    clas = models.ManyToManyField(Class, related_name='students', blank=True)
     subject = models.ManyToManyField(Subject, blank=True)
     student_name = models.CharField(max_length=100, null=False)
     grade_group = models.CharField(max_length=100, null=False)
@@ -93,7 +93,7 @@ class Student(models.Model):
     preference_academic_activities = models.IntegerField(choices=AcademicPreferences, null=False)
     study_frequency = models.IntegerField(choices=StudyFrequency, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         db_table = 'student'
 

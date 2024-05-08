@@ -42,9 +42,9 @@ def get_users(request):
     users = list(User.objects.values())
     return JsonResponse(users, safe=False)
 
-def get_user_by_ID(request, userID):
+def get_user_by_ID(request, user_ID):
     # Buscar el usuario por ID, si no se encuentra, devolver un error 404
-    user = get_object_or_404(User, idUser=userID)
+    user = get_object_or_404(User, id_user=user_ID)
 
     # Convertir los datos del usuario en un diccionario serializable
     user_data = {
@@ -57,9 +57,9 @@ def get_user_by_ID(request, userID):
     # Devolver los datos del usuario como una respuesta JSON
     return JsonResponse(user_data)
 
-def get_user_by_email(userEmail):
+def get_user_by_email(user_email):
     # Buscar el usuario por ID, si no se encuentra, devolver un error 404
-    user = get_object_or_404(User, email=userEmail)
+    user = get_object_or_404(User, email=user_email)
     # Devolver los datos del usuario como una respuesta JSON
     return user
 
