@@ -1,7 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Class, Student, User
+from .models import Class, Student, Subject, User
 
 @csrf_exempt
 def student_registration(request):
@@ -137,3 +137,117 @@ def remove_student_from_class(request):
             return JsonResponse({'error': 'El estudiante no está asociado a esta clase'}, status=400)
 
     return JsonResponse({'error': 'Se espera una solicitud PATCH'}, status=405)
+
+@csrf_exempt
+def remove_student_from_subject(request):
+    if request.method == 'DELETE':
+        data = json.loads(request.body)
+        username = data.get('username')
+        subject_name = data.get('subject_name')
+        student_name = data.get('student_name')
+
+        if not (username and subject_name and student_name):
+            return JsonResponse({'error': 'Se requieren todos los campos: username, subject_name y student_name'}, status=400)
+
+        # Verificar si el usuario existe
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'El usuario no existe'}, status=404)
+
+        # Verificar si la materia existe para el usuario
+        try:
+            subject = Subject.objects.get(subject_name=subject_name, user=user)
+        except Subject.DoesNotExist:
+            return JsonResponse({'error': 'La materia no existe para este usuario'}, status=404)
+
+        # Verificar si el estudiante existe
+        try:
+            student = Student.objects.get(student_name=student_name, user=user)
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'El estudiante no existe para este usuario'}, status=404)
+
+        # Eliminar el estudiante de la materia
+        student.subject.remove(subject)
+        student.save()
+
+        return JsonResponse({'message': 'Estudiante eliminado de la materia exitosamente'})
+
+    return JsonResponse({'error': 'Se espera una solicitud DELETE'}, status=405)
+
+@csrf_exempt
+def add_student_to_subject(request):
+    if request.method == 'PATCH':
+        data = json.loads(request.body)
+        username = data.get('username')
+        subject_name = data.get('subject_name')
+        student_name = data.get('student_name')
+
+        if not (username and subject_name and student_name):
+            return JsonResponse({'error': 'Se requieren todos los campos: username, subject_name y student_name'}, status=400)
+
+        # Verificar si el usuario existe
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'El usuario no existe'}, status=404)
+
+        # Verificar si la materia existe para el usuario
+        try:
+            subject = Subject.objects.get(subject_name=subject_name, user=user)
+        except Subject.DoesNotExist:
+            return JsonResponse({'error': 'La materia no existe para este usuario'}, status=404)
+
+        # Verificar si el estudiante existe
+        try:
+            student = Student.objects.get(student_name=student_name, user=user)
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'El estudiante no existe para este usuario'}, status=404)
+
+        # Añadir el estudiante a la materia
+        student.subject.add(subject)
+        student.save()
+
+        return JsonResponse({'message': 'Estudiante añadido a la materia exitosamente'})
+
+    return JsonResponse({'error': 'Se espera una solicitud PATCH'}, status=405)
+
+@csrf_exempt
+def get_students_by_subject(request, subject_name):
+    if request.method == 'GET':
+        try:
+            # Buscar la materia por el nombre dado
+            subject = Subject.objects.get(subject_name=subject_name)
+        except Subject.DoesNotExist:
+            return JsonResponse({'error': 'La materia no existe'}, status=404)
+
+        # Obtener todos los estudiantes asociados a la materia
+        students = subject.student_set.all()
+
+        # Serializar los datos de los estudiantes
+        student_data = [{'student_name': student.student_name, 'grade_group': student.grade_group} for student in students]
+
+        # Retornar los datos de los estudiantes como JSON
+        return JsonResponse({'students': student_data})
+
+    return JsonResponse({'error': 'Se espera una solicitud GET'}, status=405)
+
+@csrf_exempt
+def get_students_by_username(request, username):
+    if request.method == 'GET':
+        try:
+            # Buscar la materia por el nombre dado
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'El estudiante no existe'}, status=404)
+
+        # Obtener todos los estudiantes asociados a la materia
+        students = user.student_set.all()
+
+        # Serializar los datos de los estudiantes
+        student_data = [{'student_name': student.student_name, 'grade_group': student.grade_group} for student in students]
+
+        # Retornar los datos de los estudiantes como JSON
+        return JsonResponse({'students': student_data})
+
+    return JsonResponse({'error': 'Se espera una solicitud GET'}, status=405)

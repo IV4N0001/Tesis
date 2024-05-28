@@ -7,7 +7,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
 from .models import User
-from .authentication import check_password, send_token
+from .authentication import send_token
 import secrets
 import json
 

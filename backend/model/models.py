@@ -100,9 +100,8 @@ class Student(models.Model):
 class Tendency(models.Model):
     id_tendency = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
-    student_class = models.IntegerField(null=False)
-    tendency_to_fail = models.FloatField(null=False)
-    tendency_to_approve = models.FloatField(null=False)
+    student_class = models.CharField(max_length=16, null=False, default='1-01')
+    tendency = models.CharField(max_length=16, null=False, default='0')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
