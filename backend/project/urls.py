@@ -56,7 +56,7 @@ urlpatterns = [
     path('tendency/get-tendencys', tendency_views.get_tendencys),
     path('tendency/get-tendencies-by-username/<str:username>/', tendency_views.get_tendencies_by_username),
     path('tendency/get-student-tendency/<str:username>/<str:student_name>/', tendency_views.get_student_tendency),
-    path('tendency/get-group-tendencys/<str:grade_group>/', tendency_views.get_group_tendency),
+    path('tendency/get-group-tendencys/<str:username>/<str:grade_group>/', tendency_views.get_group_tendency),
     path('tendency/get-user-tendency-by-category/<str:username>/<str:tendency_category>/', tendency_views.get_user_tendency_by_category),
-    path('tendency/get-group-tendency-by-category/<str:grade_group>/<str:tendency_category>/', tendency_views.get_group_tendency_by_category),
+    path('tendency/get-group-tendency-by-category/<str:username>/<str:grade_group>/<str:tendency_category>/', tendency_views.get_group_tendency_by_category),
 ]

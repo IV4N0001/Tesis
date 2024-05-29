@@ -102,11 +102,11 @@ def get_student_tendency(request, username, student_name):
     return JsonResponse({'error': 'Se espera una solicitud GET'}, status=405)
 
 @csrf_exempt
-def get_group_tendency(request, grade_group):
+def get_group_tendency(request, username, grade_group):
     if request.method == 'GET':
         try:
-            # Obtener todos los estudiantes del grupo
-            students = Student.objects.filter(grade_group=grade_group)
+            # Obtener todos los estudiantes del grupo registrados por el usuario
+            students = Student.objects.filter(username=username, grade_group=grade_group)
 
             # Inicializar un diccionario para almacenar las últimas tendencias de cada estudiante
             latest_tendencies = {}
@@ -129,11 +129,11 @@ def get_group_tendency(request, grade_group):
     return JsonResponse({'error': 'Se espera una solicitud GET'}, status=405)
 
 @csrf_exempt
-def get_group_tendency_by_category(request, grade_group, tendency_category):
+def get_group_tendency_by_category(request, username, grade_group, tendency_category):
     if request.method == 'GET':
         try:
-            # Obtener todos los estudiantes del grupo
-            students = Student.objects.filter(grade_group=grade_group)
+            # Obtener todos los estudiantes del grupo registrados por el usuario
+            students = Student.objects.filter(username=username, grade_group=grade_group)
 
             # Inicializar un diccionario para almacenar las últimas tendencias de cada estudiante para la categoría especificada
             latest_tendencies = {}
@@ -154,7 +154,6 @@ def get_group_tendency_by_category(request, grade_group, tendency_category):
             return JsonResponse({'error': 'No hay estudiantes o tendencias para este grupo y categoría'}, status=404)
 
     return JsonResponse({'error': 'Se espera una solicitud GET'}, status=405)
-
 
 @csrf_exempt
 def get_student_tendency_by_category(request, username, tendency_category):
